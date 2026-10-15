@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Deal {
+  id              String   @id @default(cuid())
+  title           String
+  borrower        String
+  country         String
+  sector          String
+  transactionType String
+  amount          String?
+  banks           String[]
+  announcedAt     DateTime
+  summary         String   @db.Text
+  rationale       String   @db.Text
+  bankingInsight  String   @db.Text
+  status          String   @default("ANNOUNCED")
+  sourceUrl       String   @unique
+  sourceName      String
+  published       Boolean  @default(false)
+  featuredDate    String?
+  createdAt       DateTime @default(now())
+
+  @@index([announcedAt(sort: Desc)])
+  @@index([published, featuredDate])
+}

@@ -1,0 +1,19 @@
+name: Daily APAC deal ingestion
+on:
+  schedule:
+    # 08:00 JST = 23:00 UTC on the previous day (JST has no DST)
+    - cron: '0 23 * * *'
+  workflow_dispatch:
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call protected ingestion endpoint
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          test -n "$SITE_URL" && test -n "$CRON_SECRET"
+          curl --fail-with-body --retry 2 --max-time 310 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$SITE_URL/api/cron/ingest"
